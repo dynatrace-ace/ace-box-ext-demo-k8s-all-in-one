@@ -1,6 +1,33 @@
 ---
-- include_role:
-    name: k3s
+# - include_role:
+#     name: k3s
+
+# - include_role:
+#     name: dt-access-token
+#   vars:
+#     access_token_var_name: "security_custom_event_ingestion_token"
+#     access_token_scope:
+#       ["openpipeline.events_security", "openpipeline.events_security.custom"]
+
+# - block:
+#     - name: Upload token to DT Credential Vault
+#       ansible.builtin.uri:
+#         url: "{{ extra_vars.credential_vault_url_gen2 }}"
+#         method: POST
+#         status_code: 201
+#         headers:
+#           Authorization: "Api-Token {{ monaco_api_token }}"
+#           Content-Type: "application/json"
+#         body_format: json
+#         body:
+#             allowContextlessRequests: true
+#             ownerAccessOnly: false
+#             name: "security-custom-event-ingestion-token"
+#             description: "Security custom event ingestion token"
+#             token: "{{ security_custom_event_ingestion_token }}"
+#             type: "TOKEN"
+#             user: "default"
+#             scopes: ["APP_ENGINE"]
 
 # - include_role:
 #     name: dt-operator
