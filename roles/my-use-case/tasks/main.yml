@@ -2,8 +2,8 @@
 - include_role:
     name: microk8s
 
-- include_role:
-    name: dt-operator
+# - include_role:
+#     name: dt-operator
 
-- include_role:
-    name: unguard
+# - include_role:
+#     name: unguard
