@@ -1,0 +1,12 @@
+configs:
+
+# - id: f675b7fb-0e69-43e0-b046-4ac86017518c
+#   config:
+#     name:
+#       type: value
+#       value: Brute-force Azure Sign-In Logs Upload
+#     template: azure-brute-force-sign-in-logs-upload.json
+#     skip: false
+#   type:
+#     automation:
+#       resource: workflow

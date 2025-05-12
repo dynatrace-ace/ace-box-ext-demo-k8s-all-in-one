@@ -1,36 +1,92 @@
 ---
-# - include_role:
-#     name: k3s
+
+- include_role:
+    name: dt-access-token
+  vars:
+    access_token_var_name: "monaco_api_token"
+    access_token_scope:
+      [
+        "CaptureRequestData",
+        "credentialVault.read",
+        "credentialVault.write",
+        "DataExport",
+        "DataPrivacy",
+        "ReadConfig",
+        "WriteConfig",
+        "events.ingest",
+        "settings.read",
+        "settings.write",
+        "metrics.ingest",
+        "logs.ingest"
+      ]
+
+- include_role:
+    name: dt-access-token
+  vars:
+    access_token_var_name: "security_custom_event_ingestion_token"
+    access_token_scope:
+      ["openpipeline.events_security", "openpipeline.events_security.custom"]
+
+- block:
+    - name: Upload token to DT Credential Vault
+      ansible.builtin.uri:
+        url: "{{ extra_vars.credential_vault_url_gen2 }}"
+        method: POST
+        status_code: 201
+        headers:
+          Authorization: "Api-Token {{ monaco_api_token }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+            allowContextlessRequests: true
+            ownerAccessOnly: false
+            name: "security-custom-event-ingestion-token"
+            description: "Security custom event ingestion token"
+            token: "{{ security_custom_event_ingestion_token }}"
+            type: "TOKEN"
+            user: "default"
+            scopes: ["APP_ENGINE"]
+
+# Generate OAuth Token
+- include_role:
+    name: dt-oauth-token
+  vars:
+    dt_oauth_sso_endpoint: "{{ extra_vars.dt_oauth_sso_endpoint }}"
+    dt_oauth_client_id: "{{ extra_vars.dt_oauth_client_id }}"
+    dt_oauth_client_secret: "{{ extra_vars.dt_oauth_client_secret }}"
+    dt_oauth_scope: "app-engine:apps:install app-engine:apps:run"
+    dt_oauth_account_urn: "{{ extra_vars.dt_oauth_account_urn }}"
 
 # - include_role:
-#     name: dt-access-token
+#     name: monaco-v2
+
+# - include_role:
+#     name: monaco-v2
+#     tasks_from: apply-monaco
 #   vars:
-#     access_token_var_name: "security_custom_event_ingestion_token"
-#     access_token_scope:
-#       ["openpipeline.events_security", "openpipeline.events_security.custom"]
+#     monaco_projects_root: "{{role_path_abs}}/files/monaco"  # monaco projects root folder path
+#     monaco_project: "" # selection of projects or all projects under the root path if set empty
+#     monaco_manifest_path: "{{role_path_abs}}/files/monaco/manifest.yaml"
+#     monaco_environment:
+#       DT_API_TOKEN: "{{ monaco_api_token }}"
+#       DT_PLATFORM_TENANT_URL: "{{ extra_vars.dt_environment_url_gen3 }}"
+#       DT_OAUTH_CLIENT_ID: "{{ extra_vars.dt_oauth_client_id }}"
+#       DT_OAUTH_CLIENT_SECRET: "{{ extra_vars.dt_oauth_client_secret }}"
+#       DT_OAUTH_SSO_ENDPOINT: "{{ extra_vars.dt_oauth_sso_endpoint }}"
+#       INGRESS_DOMAIN: "{{ ingress_domain }}"
 
-# - block:
-#     - name: Upload token to DT Credential Vault
-#       ansible.builtin.uri:
-#         url: "{{ extra_vars.credential_vault_url_gen2 }}"
-#         method: POST
-#         status_code: 201
-#         headers:
-#           Authorization: "Api-Token {{ monaco_api_token }}"
-#           Content-Type: "application/json"
-#         body_format: json
-#         body:
-#             allowContextlessRequests: true
-#             ownerAccessOnly: false
-#             name: "security-custom-event-ingestion-token"
-#             description: "Security custom event ingestion token"
-#             token: "{{ security_custom_event_ingestion_token }}"
-#             type: "TOKEN"
-#             user: "default"
-#             scopes: ["APP_ENGINE"]
+# Setup OpenPipeline config
+# - include_tasks:
+#     file: add-openpipeline-config.yml
+#   vars:
+#     path_to_openpipeline_security_events_config: ace-box-ext-demo-k8s-all-in-one/roles/my-use-case/files/monaco/openpipeline/security-events-config.json
 
-# - include_role:
-#     name: dt-operator
+# Deploy resources on the VM
+- include_role:
+    name: k3s
 
-# - include_role:
-#     name: unguard
+- include_role:
+    name: dt-operator
+
+- include_role:
+    name: unguard
