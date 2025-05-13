@@ -93,19 +93,7 @@
 - include_role:
     name: unguard
 
-# - name: Setup kspm dynakube.yml from template
-#   template:
-#     src: "{{ role_path }}/templates/dynakube.yml.j2"
-#     dest: "{{ role_path }}/files/dynakube.yml"
-#     owner: "{{ ace_box_user }}"
-#     group: "{{ ace_box_user }}"
-#     mode: '0644'
-#   vars:
-#     api_url: "{{ extra_vars.dt_environment_url_gen3 | regex_replace('\\.apps', '') }}"
-
-# - name: Apply dynakube
-#   command: kubectl apply -f "{{ role_path }}/files/dynakube.yml"
-
+# KSPM Setup
 # - name: Configure tenant setting new kubernetes security posture
 #   shell: >
 #     curl -X 'POST' \
@@ -125,3 +113,16 @@
 #             } 
     
 #           ]'
+
+# - name: Setup kspm dynakube-node-config-collector yml from template
+#   template:
+#     src: "{{ role_path }}/templates/dynakube.yml.j2"
+#     dest: "{{ role_path }}/files/dynakube.yml"
+#     owner: "{{ ace_box_user }}"
+#     group: "{{ ace_box_user }}"
+#     mode: '0644'
+#   vars:
+#     api_url: "{{ extra_vars.dt_environment_url_gen3 | regex_replace('\\.apps', '') }}"
+
+# - name: Apply dynakube
+#   command: kubectl apply -f "{{ role_path }}/files/dynakube.yml"
