@@ -81,17 +81,8 @@
 #   vars:
 #     path_to_openpipeline_security_events_config: ace-box-ext-demo-k8s-all-in-one/roles/my-use-case/files/monaco/openpipeline/security-events-config.json
 
-# Deploy resources on the VM
-- include_role:
-    name: k3s
-
-- include_role:
-    name: dt-operator
-
-- include_role:
-    name: unguard
-
 # KSPM Setup
+
 # - name: Configure tenant setting new kubernetes security posture
 #   shell: >
 #     curl -X 'POST' \
@@ -132,3 +123,13 @@
 #   retries: 10
 #   delay: 10
 #   until: dynakube is not failed
+
+# Deploy resources on the VM
+- include_role:
+    name: k3s
+
+- include_role:
+    name: dt-operator
+
+- include_role:
+    name: unguard
