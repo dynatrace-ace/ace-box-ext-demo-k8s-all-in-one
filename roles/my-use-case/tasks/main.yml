@@ -87,8 +87,6 @@
 
 - include_role:
     name: dt-operator
-  vars:
-    log_monitoring: "fluentbit"
 
 - include_role:
     name: unguard
@@ -114,15 +112,23 @@
     
 #           ]'
 
-# - name: Setup kspm dynakube-node-config-collector yml from template
-#   template:
-#     src: "{{ role_path }}/templates/dynakube.yml.j2"
-#     dest: "{{ role_path }}/files/dynakube.yml"
+
+# Apply Dynakube
+# - name: Template Dynakube manifest
+#   ansible.builtin.template:
+#     src: "{{ role_path }}/templates/dynakube.yaml.j2"
+#     dest: "{{ role_path }}/files/dynakube.yaml"
 #     owner: "{{ ace_box_user }}"
 #     group: "{{ ace_box_user }}"
-#     mode: '0644'
+#     mode: "0644"
 #   vars:
 #     api_url: "{{ extra_vars.dt_environment_url_gen3 | regex_replace('\\.apps', '') }}"
 
-# - name: Apply dynakube
-#   command: kubectl apply -f "{{ role_path }}/files/dynakube.yml"
+# - name: Apply Dynakube manifest
+#   kubernetes.core.k8s:
+#     state: present
+#     src: "{{ role_path }}/files/dynakube.yaml"
+#   register: dynakube
+#   retries: 10
+#   delay: 10
+#   until: dynakube is not failed
