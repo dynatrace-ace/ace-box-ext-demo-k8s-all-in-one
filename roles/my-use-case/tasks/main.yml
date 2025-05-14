@@ -1,61 +1,61 @@
 ---
 
-- include_role:
-    name: dt-access-token
-  vars:
-    access_token_var_name: "monaco_api_token"
-    access_token_scope:
-      [
-        "CaptureRequestData",
-        "credentialVault.read",
-        "credentialVault.write",
-        "DataExport",
-        "DataPrivacy",
-        "ReadConfig",
-        "WriteConfig",
-        "events.ingest",
-        "settings.read",
-        "settings.write",
-        "metrics.ingest",
-        "logs.ingest"
-      ]
+# - include_role:
+#     name: dt-access-token
+#   vars:
+#     access_token_var_name: "monaco_api_token"
+#     access_token_scope:
+#       [
+#         "CaptureRequestData",
+#         "credentialVault.read",
+#         "credentialVault.write",
+#         "DataExport",
+#         "DataPrivacy",
+#         "ReadConfig",
+#         "WriteConfig",
+#         "events.ingest",
+#         "settings.read",
+#         "settings.write",
+#         "metrics.ingest",
+#         "logs.ingest"
+#       ]
 
-- include_role:
-    name: dt-access-token
-  vars:
-    access_token_var_name: "security_custom_event_ingestion_token"
-    access_token_scope:
-      ["openpipeline.events_security", "openpipeline.events_security.custom"]
+# - include_role:
+#     name: dt-access-token
+#   vars:
+#     access_token_var_name: "security_custom_event_ingestion_token"
+#     access_token_scope:
+#       ["openpipeline.events_security", "openpipeline.events_security.custom"]
 
-- block:
-    - name: Upload token to DT Credential Vault
-      ansible.builtin.uri:
-        url: "{{ extra_vars.credential_vault_url_gen2 }}"
-        method: POST
-        status_code: 201
-        headers:
-          Authorization: "Api-Token {{ monaco_api_token }}"
-          Content-Type: "application/json"
-        body_format: json
-        body:
-            allowContextlessRequests: true
-            ownerAccessOnly: false
-            name: "security-custom-event-ingestion-token"
-            description: "Security custom event ingestion token"
-            token: "{{ security_custom_event_ingestion_token }}"
-            type: "TOKEN"
-            user: "default"
-            scopes: ["APP_ENGINE"]
+# - block:
+#     - name: Upload token to DT Credential Vault
+#       ansible.builtin.uri:
+#         url: "{{ extra_vars.credential_vault_url_gen2 }}"
+#         method: POST
+#         status_code: 201
+#         headers:
+#           Authorization: "Api-Token {{ monaco_api_token }}"
+#           Content-Type: "application/json"
+#         body_format: json
+#         body:
+#             allowContextlessRequests: true
+#             ownerAccessOnly: false
+#             name: "security-custom-event-ingestion-token"
+#             description: "Security custom event ingestion token"
+#             token: "{{ security_custom_event_ingestion_token }}"
+#             type: "TOKEN"
+#             user: "default"
+#             scopes: ["APP_ENGINE"]
 
-# Generate OAuth Token
-- include_role:
-    name: dt-oauth-token
-  vars:
-    dt_oauth_sso_endpoint: "{{ extra_vars.dt_oauth_sso_endpoint }}"
-    dt_oauth_client_id: "{{ extra_vars.dt_oauth_client_id }}"
-    dt_oauth_client_secret: "{{ extra_vars.dt_oauth_client_secret }}"
-    dt_oauth_scope: "app-engine:apps:install app-engine:apps:run"
-    dt_oauth_account_urn: "{{ extra_vars.dt_oauth_account_urn }}"
+# # Generate OAuth Token
+# - include_role:
+#     name: dt-oauth-token
+#   vars:
+#     dt_oauth_sso_endpoint: "{{ extra_vars.dt_oauth_sso_endpoint }}"
+#     dt_oauth_client_id: "{{ extra_vars.dt_oauth_client_id }}"
+#     dt_oauth_client_secret: "{{ extra_vars.dt_oauth_client_secret }}"
+#     dt_oauth_scope: "app-engine:apps:install app-engine:apps:run"
+#     dt_oauth_account_urn: "{{ extra_vars.dt_oauth_account_urn }}"
 
 # - include_role:
 #     name: monaco-v2
@@ -104,7 +104,7 @@
 #           ]'
 
 
-# Apply Dynakube
+# # Apply Dynakube
 # - name: Template Dynakube manifest
 #   ansible.builtin.template:
 #     src: "{{ role_path }}/templates/dynakube.yaml.j2"
@@ -124,12 +124,16 @@
 #   delay: 10
 #   until: dynakube is not failed
 
+
 # Deploy resources on the VM
 - include_role:
     name: k3s
 
 - include_role:
-    name: dt-operator
+    name: dt-operator-local
+  vars:
+    # log_monitoring: "fluentbit"
+    kspm: "on"
 
-- include_role:
-    name: unguard
+# - include_role:
+#     name: unguard
