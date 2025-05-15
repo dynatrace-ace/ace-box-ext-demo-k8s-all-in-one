@@ -82,6 +82,20 @@
 #     path_to_openpipeline_security_events_config: ace-box-ext-demo-k8s-all-in-one/roles/my-use-case/files/monaco/openpipeline/security-events-config.json
 
 
+# Deploy resources on the VM
+- include_role:
+    name: k3s
+
+- include_role:
+    name: dt-operator-local
+  vars:
+    log_monitoring: "fluentbit"
+    kspm: "on"
+
+- include_role:
+    name: unguard
+
+
 # Enable KSPM on the tenant
 - name: Configure tenant setting new kubernetes security posture
   shell: >
@@ -102,16 +116,3 @@
             } 
     
           ]'
-
-# Deploy resources on the VM
-- include_role:
-    name: k3s
-
-- include_role:
-    name: dt-operator-local
-  vars:
-    log_monitoring: "fluentbit"
-    kspm: "on"
-
-- include_role:
-    name: unguard
