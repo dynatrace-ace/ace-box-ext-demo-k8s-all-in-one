@@ -146,5 +146,5 @@
   when: operator_mode == "classicFullStack"
 
 - include_role:
-    name: fluentbit
+    name: fluentbit-local
   when: log_monitoring == "fluentbit"
