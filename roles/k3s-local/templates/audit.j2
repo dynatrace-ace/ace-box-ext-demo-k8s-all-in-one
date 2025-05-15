@@ -1,34 +1,4 @@
 apiVersion: audit.k8s.io/v1beta1
 kind: Policy
 rules:
-  # 1. Log all service account token requests
-  - level: RequestResponse
-    verbs: ["create"]
-    resources:
-      - group: "authentication.k8s.io"
-        resources: ["tokenreviews"]
-
-  # 2. Monitor service account role assignments
-  - level: RequestResponse
-    verbs: ["create", "update", "delete"]
-    resources:
-      - group: "rbac.authorization.k8s.io"
-        resources: ["rolebindings", "clusterrolebindings"]
-
-  # 3. Log service account access to secrets
-  - level: RequestResponse
-    verbs: ["get", "list"]
-    resources:
-      - group: ""
-        resources: ["secrets"]
-
-  # 4. Track service account pod execution
-  - level: RequestResponse
-    verbs: ["create"]
-    resources:
-      - group: ""
-        resources: ["pods/exec", "pods/attach"]
-
-  # 5. Monitor service account API calls
-  - level: RequestResponse
-    users: ["system:serviceaccount:*"]
+  - level: Metadata
