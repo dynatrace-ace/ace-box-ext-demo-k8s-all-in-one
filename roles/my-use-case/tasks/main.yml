@@ -1,51 +1,51 @@
 ---
 
-# - include_role:
-#     name: dt-access-token
-#   vars:
-#     access_token_var_name: "monaco_api_token"
-#     access_token_scope:
-#       [
-#         "CaptureRequestData",
-#         "credentialVault.read",
-#         "credentialVault.write",
-#         "DataExport",
-#         "DataPrivacy",
-#         "ReadConfig",
-#         "WriteConfig",
-#         "events.ingest",
-#         "settings.read",
-#         "settings.write",
-#         "metrics.ingest",
-#         "logs.ingest"
-#       ]
+- include_role:
+    name: dt-access-token
+  vars:
+    access_token_var_name: "monaco_api_token"
+    access_token_scope:
+      [
+        "CaptureRequestData",
+        "credentialVault.read",
+        "credentialVault.write",
+        "DataExport",
+        "DataPrivacy",
+        "ReadConfig",
+        "WriteConfig",
+        "events.ingest",
+        "settings.read",
+        "settings.write",
+        "metrics.ingest",
+        "logs.ingest"
+      ]
 
-# - include_role:
-#     name: dt-access-token
-#   vars:
-#     access_token_var_name: "security_custom_event_ingestion_token"
-#     access_token_scope:
-#       ["openpipeline.events_security", "openpipeline.events_security.custom"]
+- include_role:
+    name: dt-access-token
+  vars:
+    access_token_var_name: "security_custom_event_ingestion_token"
+    access_token_scope:
+      ["openpipeline.events_security", "openpipeline.events_security.custom"]
 
-# - block:
-#     - name: Upload token to DT Credential Vault
-#       ansible.builtin.uri:
-#         url: "{{ extra_vars.credential_vault_url_gen2 }}"
-#         method: POST
-#         status_code: 201
-#         headers:
-#           Authorization: "Api-Token {{ monaco_api_token }}"
-#           Content-Type: "application/json"
-#         body_format: json
-#         body:
-#             allowContextlessRequests: true
-#             ownerAccessOnly: false
-#             name: "security-custom-event-ingestion-token"
-#             description: "Security custom event ingestion token"
-#             token: "{{ security_custom_event_ingestion_token }}"
-#             type: "TOKEN"
-#             user: "default"
-#             scopes: ["APP_ENGINE"]
+- block:
+    - name: Upload token to DT Credential Vault
+      ansible.builtin.uri:
+        url: "{{ extra_vars.credential_vault_url_gen2 }}"
+        method: POST
+        status_code: 201
+        headers:
+          Authorization: "Api-Token {{ monaco_api_token }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+            allowContextlessRequests: true
+            ownerAccessOnly: false
+            name: "security-custom-event-ingestion-token"
+            description: "Security custom event ingestion token"
+            token: "{{ security_custom_event_ingestion_token }}"
+            type: "TOKEN"
+            user: "default"
+            scopes: ["APP_ENGINE"]
 
 # # Generate OAuth Token
 # - include_role:
@@ -97,22 +97,22 @@
 
 
 # Enable KSPM on the tenant
-# - name: Configure tenant setting new kubernetes security posture
-#   shell: >
-#     curl -X 'POST' \
-#       '{{ extra_vars.dt_environment_url_gen3 | regex_replace('\\.apps', '') }}/api/v2/settings/objects?validateOnly=false' \
-#       -H 'accept: application/json' \
-#       -H 'Content-Type: application/json; charset=utf-8' \
-#       -H 'Authorization: Api-Token {{ monaco_api_token }}' \
-#       -d '[
+- name: Configure tenant setting new kubernetes security posture
+  shell: >
+    curl -X 'POST' \
+      '{{ extra_vars.dt_environment_url_gen3 | regex_replace('\\.apps', '') }}/api/v2/settings/objects?validateOnly=false' \
+      -H 'accept: application/json' \
+      -H 'Content-Type: application/json; charset=utf-8' \
+      -H 'Authorization: Api-Token {{ monaco_api_token }}' \
+      -d '[
             
-#             {
-#                   "schemaId": "builtin:kubernetes.security-posture-management",
-#                   "schemaVersion": "1.0.0",
-#                   "scope":"environment",
-#                   "value":{
-#                     "configurationDatasetPipelineEnabled":false
-#                   }
-#             } 
+            {
+                  "schemaId": "builtin:kubernetes.security-posture-management",
+                  "schemaVersion": "1.0.0",
+                  "scope":"environment",
+                  "value":{
+                    "configurationDatasetPipelineEnabled":false
+                  }
+            } 
     
-#           ]'
+          ]'
