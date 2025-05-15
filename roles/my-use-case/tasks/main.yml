@@ -75,16 +75,12 @@
 #       DT_OAUTH_SSO_ENDPOINT: "{{ extra_vars.dt_oauth_sso_endpoint }}"
 #       INGRESS_DOMAIN: "{{ ingress_domain }}"
 
-# Setup OpenPipeline config
-# - include_tasks:
-#     file: add-openpipeline-config.yml
-#   vars:
-#     path_to_openpipeline_security_events_config: ace-box-ext-demo-k8s-all-in-one/roles/my-use-case/files/monaco/openpipeline/security-events-config.json
-
 
 # Deploy resources on the VM
 - include_role:
     name: k3s-local
+  vars:
+    k3s_audit_log: "on"
 
 - include_role:
     name: dt-operator-local
