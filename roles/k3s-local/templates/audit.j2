@@ -1,9 +1,6 @@
 apiVersion: audit.k8s.io/v1
 kind: Policy
 rules:
-apiVersion: audit.k8s.io/v1
-kind: Policy
-rules:
   # 1. Log all GET and LIST requests for secrets and configmaps
   - level: RequestResponse
     verbs: ["get", "list"]
