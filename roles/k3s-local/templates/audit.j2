@@ -1,61 +1,41 @@
 apiVersion: audit.k8s.io/v1
 kind: Policy
 rules:
-  # 1. Log all GET and LIST requests for secrets and configmaps
   - level: RequestResponse
     verbs: ["get", "list"]
     resources:
     - group: ""
       resources: ["secrets", "configmaps"]
 
-  # 2. Monitor all CREATE, UPDATE, and DELETE operations on ClusterRoles and ClusterRoleBindings
   - level: RequestResponse
     verbs: ["create", "update", "delete"]
     resources:
     - group: "rbac.authorization.k8s.io"
       resources: ["clusterroles", "clusterrolebindings"]
+    - group: "rbac.authorization.k8s.io"
+      resources: ["rolebindings", "clusterrolebindings"]
 
-  # 3. Log all pod deployments (CREATE events)
   - level: RequestResponse
     verbs: ["create"]
     resources:
     - group: ""
       resources: ["pods"]
+    - group: ""
+      resources: ["pods/exec", "pods/attach"]
 
-  # 4. Log metadata for all failed API requests (useful for security monitoring)
   - level: Metadata
     verbs: ["create", "update", "delete"]
-    resources: ["*"]
+    resources:
+    - group: "" # Fix: Empty string instead of wildcard
+      resources: ["nodes", "services", "deployments", "configmaps", "secrets"]
     omitStages: ["RequestReceived"]
 
-  # 5. Log all service account token requests
   - level: RequestResponse
     verbs: ["create"]
     resources:
     - group: "authentication.k8s.io"
       resources: ["tokenreviews"]
 
-  # 6. Monitor service account role assignments
   - level: RequestResponse
-    verbs: ["create", "update", "delete"]
-    resources:
-    - group: "rbac.authorization.k8s.io"
-      resources: ["rolebindings", "clusterrolebindings"]
-
-  # 7. Log service account access to secrets
-  - level: RequestResponse
-    verbs: ["get", "list"]
-    resources:
-    - group: null
-      resources: ["secrets"]
-
-  # 8. Track service account pod execution
-  - level: RequestResponse
-    verbs: ["create"]
-    resources:
-    - group: ""
-      resources: ["pods/exec", "pods/attach"]
-
-  # 9. Monitor service account API calls
-  - level: RequestResponse
-    users: ["system:serviceaccount:*"]
+    users:
+    - "system:serviceaccount:*"
