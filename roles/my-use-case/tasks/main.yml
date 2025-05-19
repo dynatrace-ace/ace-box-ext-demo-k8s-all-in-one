@@ -90,7 +90,7 @@
     kspm: "on"
 
 - include_role:
-    name: unguard
+    name: app-unguard-local
 
 
 # Enable KSPM on the tenant
