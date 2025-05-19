@@ -39,7 +39,7 @@
 - block:
   - name: Download dynatrace-operator manifest
     ansible.builtin.get_url:
-      url: "https://github.com/Dynatrace/dynatrace-operator/releases/download/{{ dt_operator_release }}/kubernetes.yaml"
+      url: "https://github.com/Dynatrace/dynatrace-operator/releases/download/v{{ dt_operator_release }}/kubernetes.yaml"
       dest: "{{ role_path }}/files/dt_operator.yaml"
       mode: '0664'
   - name: Apply dynatrace-operator manifest
@@ -68,7 +68,7 @@
 - block:
   - name: Download CSI manifest
     ansible.builtin.get_url:
-      url: "https://github.com/Dynatrace/dynatrace-operator/releases/download/{{ dt_operator_release }}/kubernetes-csi.yaml"
+      url: "https://github.com/Dynatrace/dynatrace-operator/releases/download/v{{ dt_operator_release }}/kubernetes-csi.yaml"
       dest: "{{ role_path }}/files/dt_operator-csi.yaml"
       mode: '0664'
   - name: Apply CSI manifest
